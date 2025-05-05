@@ -74,5 +74,5 @@ variable "node_group_vm" {
     scale_count_initial = 1
     scale_count_min     = 1
     scale_count_max     = 2
-    }]
+  }]
 }
