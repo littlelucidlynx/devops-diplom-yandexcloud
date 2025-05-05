@@ -14,7 +14,6 @@ terraform {
 
 provider "yandex" {
   token     = var.yc_token
-#  service_account_key_file  = file(var.yc_ssh_key_path)
   cloud_id  = var.yc_cloud_id
   folder_id = var.yc_folder_id
   zone      = var.default_zone
