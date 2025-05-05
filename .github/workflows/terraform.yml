@@ -7,6 +7,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  TF_VERSION: "1.9.8"
+  TF_BACKEND_BUCKET: "cloud-bucket-b1guvvhgbqd0n8591q7k"
+  YC_STORAGE_ENDPOINT: "https://storage.yandexcloud.net"
+  YC_REGION: "ru-central1"
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -53,8 +59,8 @@ jobs:
 
       - name: Configure AWS CLI for Yandex Cloud
         run: |
-          aws configure set aws_access_key_id ${{ env.YC_STORAGE_ACCESS_KEY }}
-          aws configure set aws_secret_access_key ${{ env.YC_STORAGE_SECRET_KEY }}
+          aws configure set aws_access_key_id ${{ secrets.YC_STORAGE_ACCESS_KEY }}
+          aws configure set aws_secret_access_key ${{ secrets.YC_STORAGE_SECRET_KEY }}
           aws configure set default.region ${{ env.YC_REGION }}
           aws --endpoint-url ${{ env.YC_STORAGE_ENDPOINT }} s3 ls s3://${{ env.TF_BACKEND_BUCKET }} || echo "Bucket access check"
 
