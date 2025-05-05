@@ -180,15 +180,3 @@ Grafana (admin/prom-operator) доступна по адресу: http://grafana
 ![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/dockerhub_tag_0.1.5.png)
 
 ![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/app_0.1.5.png)
-
----
-## Что необходимо для сдачи задания?
-
-1. Репозиторий с конфигурационными файлами Terraform и готовность продемонстрировать создание всех ресурсов с нуля.
-2. Пример pull request с комментариями созданными atlantis'ом или снимки экрана из Terraform Cloud или вашего CI-CD-terraform pipeline.
-3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible.
-4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image.
-5. Репозиторий с конфигурацией Kubernetes кластера.
-6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа.
-7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
-
