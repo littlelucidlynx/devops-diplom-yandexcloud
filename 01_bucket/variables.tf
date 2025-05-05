@@ -55,9 +55,3 @@ variable "bucket_name" {
   type        = string
   default     = "cloud-bucket"
 }
-
-# Название реестра
-variable "registry_name" {
-  type        = string
-  default     = "cloud-registry"
-}

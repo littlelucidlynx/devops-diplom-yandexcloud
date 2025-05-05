@@ -12,8 +12,9 @@ EOT
 resource "local_file" "personal-cfg" {
   content  = <<EOT
 yc_token = "${var.yc_token}"
+yc_cloud_id  = "${var.yc_cloud_id}"
+yc_folder_id = "${var.yc_folder_id}"
 service_account_id = "${yandex_iam_service_account.cloud-svc.id}"
-registry_id = "${yandex_container_registry.cloud_registry.id}"
 EOT
   filename = "../02_infrastructure/personal.auto.tfvars"
 }
