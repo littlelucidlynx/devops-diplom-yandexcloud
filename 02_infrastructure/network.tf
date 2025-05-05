@@ -7,7 +7,7 @@ resource "yandex_vpc_network" "network" {
 
 # Создание публичных подсетей в трех зонах доступности.
 resource "yandex_vpc_subnet" "public_subnets" {
-  count = 3
+  count          = 3
   name           = "public-subnet-${count.index}"
   zone           = "ru-central1-${element(["a", "b", "d"], count.index)}"
   network_id     = yandex_vpc_network.network.id

@@ -5,7 +5,7 @@ resource "yandex_kubernetes_node_group" "node_groups" {
   for_each = {
     a = 0
     b = 1
-    d = 2 
+    d = 2
   }
 
   cluster_id = yandex_kubernetes_cluster.regional_cluster.id

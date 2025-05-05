@@ -57,9 +57,7 @@ resource "yandex_resourcemanager_folder_iam_binding" "kms_access" {
 resource "yandex_resourcemanager_folder_iam_binding" "k8s_admin" {
   folder_id = var.yc_folder_id
   role      = "k8s.admin"
-  members   = [
-    "serviceAccount:${yandex_iam_service_account.k8s-svc.id}"
-  ]
+  members   = ["serviceAccount:${yandex_iam_service_account.k8s-svc.id}"]
 }
 
 # Создаем ключ сервисного аккаунта
