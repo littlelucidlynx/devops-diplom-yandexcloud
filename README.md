@@ -36,36 +36,47 @@
 
 Дополнительно в корне репозитория подготовлены скрипты `init.sh` и `stop.sh` для последовательного запуска команд и уничтожения инфраструктуры
 
+```yaml
+terraform init
+terraform apply -auto-approve
+```
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/01_bucket_init_apply.png)
+
 После создания бакета в папку `02_infrastructure` экспортируются файлы `backend.auto.tfvars` и `personal.auto.tfvars` с данными для бакета и подключения к ЯО. Файлы добавлены в `.gitignore`. Согласен, очень кривой вариант, в будущем можно попробовать использовать **vault**
+
+```yaml
+terraform init -backend-config=backend.auto.tfvars -reconfigure
+terraform apply -auto-approve
+```
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/02_infrastructure_init.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/02_infrastructure_apply.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/yc_service.png)
 
 State основной инфраструктуры хранится в бакете Yandex Cloud
 
-Ожидаемые результаты:
-
-1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий, стейт основной конфигурации сохраняется в бакете или Terraform Cloud
-2. Полученная конфигурация инфраструктуры является предварительной, поэтому в ходе дальнейшего выполнения задания возможны изменения.
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/tfstate_in_bucket.png)
 
 ---
 ### Создание Kubernetes кластера
 
-На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
-
-Для развертывания Kubernetes кластера воспользуюсь готовым решением [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes) из мастера и нод групп. Данный вариант выбран из-за стабильности и скорости развертывания, что очень полезно при большом количестве тестовых работ в условиях экономии ресурсов.
+Для развертывания Kubernetes кластера воспользуюсь готовым решением [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes) из мастера и нод групп. Данный вариант выбран из-за стабильности и скорости развертывания, что очень полезно при большом количестве тестовых работ в условиях экономии ресурсов
 
 Предварительно самостоятельно забэкапил файл `~/.kube/config`, поскольку буду писать его терраформом напрямую в пользовательскую папку. В проде так делать плохо, но в рамках дипломной работы считаю допустимым
 
-Ожидаемый результат:
+В файле `~/.kube/config` находятся данные для доступа к кластеру
 
-1. Работоспособный Kubernetes кластер.
-2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
-3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/cat_kubeconfig.png)
+
+Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/kubectl_get_pods.png)
 
 ---
 ### Создание тестового приложения
-
-Для перехода к следующему этапу необходимо подготовить тестовое приложение, эмулирующее основное приложение разрабатываемое вашей компанией.
-
-Способ подготовки:
 
 Создан отдельный репозиторий [nginx-static-app](https://github.com/littlelucidlynx/nginx-static-app). Приложение представляет собой статический сайт на nginx, создаваемый из `Dockerfile` на основе `nginx:alpine`
 
@@ -77,12 +88,9 @@ State основной инфраструктуры хранится в баке
 
 Образ выложен на DockerHub с тегом `init`
 
+[Ссылка](https://hub.docker.com/r/littlelucidlynx/static-nginx-app/tags)
+
 ![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/dockerhub_image_init.png)
-
-Ожидаемый результат:
-
-1. Git репозиторий с тестовым приложением и Dockerfile.
-2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
