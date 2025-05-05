@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  TF_VERSION: "1.5.8"
+  TF_VERSION: "1.5.7"
   TF_BACKEND_BUCKET: "cloud-bucket-b1guvvhgbqd0n8591q7k"
   YC_STORAGE_ENDPOINT: "https://storage.yandexcloud.net"
   YC_REGION: "ru-central1"
