@@ -1,10 +1,5 @@
 # Облачные переменные
-/*
-# Путь к открытому ключу для подключения к yandex cloud
-variable "yc_ssh_key_path" {
-  type        = string
-}
-*/
+
 # Токен для подключения к yandex cloud
 variable "yc_token" {
   type        = string
@@ -37,19 +32,7 @@ variable "service_account_name" {
   default     = "cloud-svc"
   description = "Сервисный аккаунт для управления облачной инфраструктурой"
 }
-/*
-# Роль для управления облаком
-variable "cloud_role" {
-  type        = string
-  default     = "editor"
-}
 
-# Роль для управления хранилищем
-variable "storage_role" {
-  type        = string
-  default     = "storage.admin"
-}
-*/
 # Имя s3-бакета
 variable "bucket_name" {
   type        = string
