@@ -141,6 +141,8 @@ kubectl apply -f sa_for_github.yml
 
 Grafana (admin/prom-operator) доступна по адресу: http://grafana.littlelucidlynx.ru
 
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/grafana_80.png)
+
 ---
 ### Установка и настройка CI/CD
 
