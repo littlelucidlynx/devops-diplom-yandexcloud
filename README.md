@@ -30,8 +30,11 @@
 Основной [репозиторий](https://github.com/littlelucidlynx/devops-diplom-yandexcloud)
 
 Репозиторий с инфраструктурой разделен на папки:
+
 [01_bucket](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/tree/main/01_bucket) - отвечает за создание сервисной учетной записи и бакета в Yandex Cloud
+
 [02_infrastructure](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/tree/main/02_infrastructure) - отвечает за развертывание инфраструктуры и поднятие кластера Kubernetes
+
 [03_app](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/tree/main/03_app) - отвечает за развертывание приложения в кластер и сущности ингресс
 
 Дополнительно в корне репозитория подготовлены скрипты `init.sh` и `stop.sh` для последовательного запуска команд и уничтожения инфраструктуры
@@ -45,6 +48,7 @@ terraform apply -auto-approve
 
 После создания бакета в папку `02_infrastructure` экспортируются файлы `backend.auto.tfvars` и `personal.auto.tfvars` с данными для бакета и подключения к ЯО. Файлы добавлены в `.gitignore`. Согласен, очень кривой вариант, в будущем можно попробовать использовать **vault**
 
+Инициализация терраформа и формирование инфраструктуры
 ```yaml
 terraform init -backend-config=backend.auto.tfvars -reconfigure
 terraform apply -auto-approve
@@ -54,7 +58,7 @@ terraform apply -auto-approve
 
 ![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/02_infrastructure_apply.png)
 
-![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/yc_service.png)
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/yc_services.png)
 
 State основной инфраструктуры хранится в бакете Yandex Cloud
 
@@ -95,28 +99,9 @@ State основной инфраструктуры хранится в баке
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
 
-Уже должны быть готовы конфигурации для автоматического создания облачной инфраструктуры и поднятия Kubernetes кластера.  
-Теперь необходимо подготовить конфигурационные файлы для настройки нашего Kubernetes кластера.
-
-Цель:
-1. Задеплоить в кластер [prometheus](https://prometheus.io/), [grafana](https://grafana.com/), [alertmanager](https://github.com/prometheus/alertmanager), [экспортер](https://github.com/prometheus/node_exporter) основных метрик Kubernetes.
-2. Задеплоить тестовое приложение, например, [nginx](https://www.nginx.com/) сервер отдающий статическую страницу.
-
-Способ выполнения:
-1. Воспользоваться пакетом [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus), который уже включает в себя [Kubernetes оператор](https://operatorhub.io/) для [grafana](https://grafana.com/), [prometheus](https://prometheus.io/), [alertmanager](https://github.com/prometheus/alertmanager) и [node_exporter](https://github.com/prometheus/node_exporter). Альтернативный вариант - использовать набор helm чартов от [bitnami](https://github.com/bitnami/charts/tree/main/bitnami).
-
-2. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
-
 Создание пространства имен для проекта
 ```yaml
 kubectl create namespace myproject
-```
-
-Helm-чарт для ингресса
-```yaml
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && \
-helm repo update && \
-helm install ingress-nginx ingress-nginx/ingress-nginx --namespace=myproject
 ```
 
 Helm-чарт для мониторинга
@@ -126,6 +111,17 @@ helm repo update && \
 helm install prometheus prometheus-community/kube-prometheus-stack --namespace=myproject
 ```
 
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/ns_prometheus.png)
+
+Helm-чарт для ингресса
+```yaml
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && \
+helm repo update && \
+helm install ingress-nginx ingress-nginx/ingress-nginx --namespace=myproject
+```
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/ingress.png)
+
 Деплой приложения из образа `littlelucidlynx/static-nginx-app:init`, деплой сущности ингресс и создание сервисной учетной записи для CI/CD GitHub Actions
 ```yaml
 kubectl apply -f deploy.yml
@@ -133,29 +129,55 @@ kubectl apply -f ingress.yml
 kubectl apply -f sa_for_github.yml
 ```
 
-Ожидаемый результат:
-1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
-2. Http доступ на 80 порту к web интерфейсу grafana.
-3. Дашборды в grafana отображающие состояние Kubernetes кластера.
-4. Http доступ на 80 порту к тестовому приложению.
-5. Atlantis или terraform cloud или ci/cd-terraform
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/deploy_ingress_sa.png)
+
+Поправлю DNS, создам A-записи для домена, приложения и мониторинга, привяжу их к IP балансировщика
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/dns_records.png)
+
+Поскольку диплом далек от идеала, то приложение доступно по 80 порту по адресу: http://app.littlelucidlynx.ru
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/app_80.png)
+
+Grafana (admin/prom-operator) доступна по адресу: http://grafana.littlelucidlynx.ru
+
 ---
 ### Установка и настройка CI/CD
-
-Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
-
-Цель:
 
 Для организации CI/CD воспользуюсь `GitHub Actions`. Репозитории диплома размещены на гитхабе, отдельные контейнеры и виртуальные машины с CI/CD и воркерами разворачивать не надо, что экономит средства. В проектах же с высокими требованиями к безопасности и в закрытых контурах есть смысл разворачивать self-hosted CI/CD систему.
 
 Для взаимодействия пайплайна с кластером необходимо сгенерировать конфиг-файл для сервисного аккаунта, созданного ранее, и передать его в секреты GitHub Actions. Для взаимодействия пайплайна с репозиторием необходимо передать учетные данные отдельно созданного токена (DOCKERHUB_USERNAME и DOCKERHUB_TOKEN) в секреты GitHub Actions.
 
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/actions_secrets.png)
+
 Логика пайплайна такова:
 - Если в ветке main происходит коммит **БЕЗ УКАЗАНИЯ ТЕГА** (в `refs/tags/` пусто), то артефакт отправляется в DockerHub с тегом формата `nightly-%d-%m-%Y-%H-%M-%S`. Так же в индексном файле заменяется строка BUILD на получившийся тег
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/commit_push_no_tag.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/actions_pipeline_no_tag.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/dockerhub_nightly.png)
+
 - Если в ветке main происходит коммит **С УКАЗАНИЕМ ТЕГА** (в `refs/tags/` не пусто), то артефакт отправляется в DockerHub с указанным тегом, в индексном файле заменяется строка BUILD на получившийся тег, происходит деплой образа в кластер Kubernetes
 
-1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
-2. Автоматический деплой нового docker образа.
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/tag_push_0.0.1.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/actions_pipeline_tag_0.0.1.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/dockerhub_tag_0.0.1.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/app_0.0.1.png)
+
+Несколько коммитов и тегов спустя
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/tag_push_0.1.5.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/actions_pipeline_tag_0.1.5.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/dockerhub_tag_0.1.5.png)
+
+![Image alt](https://github.com/littlelucidlynx/devops-diplom-yandexcloud/blob/main/Screen/app_0.1.5.png)
 
 ---
 ## Что необходимо для сдачи задания?
