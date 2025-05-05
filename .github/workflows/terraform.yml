@@ -80,7 +80,7 @@ jobs:
 
 
       - name: Terraform Plan
-        working-directory: ./terraform/kub
+        working-directory: ./02_infrastructure
         env:
           YC_TOKEN: ${{ secrets.YC_TOKEN }}
           YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}

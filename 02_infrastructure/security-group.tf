@@ -20,7 +20,7 @@ resource "yandex_vpc_security_group" "regional-k8s-sg" {
   ingress {
     protocol       = "ANY"
     description    = "Правило разрешает взаимодействие под-под и сервис-сервис"
-    v4_cidr_blocks = flatten( yandex_vpc_subnet.public_subnets[*].v4_cidr_blocks )
+    v4_cidr_blocks = flatten(yandex_vpc_subnet.public_subnets[*].v4_cidr_blocks)
     from_port      = 0
     to_port        = 65535
   }
