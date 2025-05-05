@@ -12,6 +12,9 @@ env:
   TF_BACKEND_BUCKET: "cloud-bucket-b1guvvhgbqd0n8591q7k"
   YC_STORAGE_ENDPOINT: "https://storage.yandexcloud.net"
   YC_REGION: "ru-central1"
+  TF_VAR_yc_token: ${{ secrets.YC_TOKEN}}
+  TF_VAR_yc_cloud_id: ${{ secrets.YC_CLOUD_ID }}
+  TF_VAR_yc_folder_id: ${{ secrets.YC_FOLDER_ID }}
 
 jobs:
   validate:
