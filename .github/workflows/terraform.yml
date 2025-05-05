@@ -50,12 +50,15 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+
       - name: Configure AWS CLI for Yandex Cloud
         run: |
-          aws configure set aws_access_key_id ${{ secrets.YC_STORAGE_ACCESS_KEY }}
-          aws configure set aws_secret_access_key ${{ secrets.YC_STORAGE_SECRET_KEY }}
+          aws configure set aws_access_key_id ${{ env.YC_STORAGE_ACCESS_KEY }}
+          aws configure set aws_secret_access_key ${{ env.YC_STORAGE_SECRET_KEY }}
           aws configure set default.region ${{ env.YC_REGION }}
           aws --endpoint-url ${{ env.YC_STORAGE_ENDPOINT }} s3 ls s3://${{ env.TF_BACKEND_BUCKET }} || echo "Bucket access check"
+
+
 
       - name: Terraform Init
         working-directory: ./terraform/kub
